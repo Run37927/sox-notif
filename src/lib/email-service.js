@@ -29,7 +29,7 @@ function generateEmailHTML(games) {
           </div>
           
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 14px;">
-            <p>Boston Red Sox Daily Notifications • Vancouver Time</p>
+            <p>Boston Red Sox Daily Notifications</p>
           </div>
         </body>
       </html>
@@ -54,7 +54,6 @@ function generateEmailHTML(games) {
         
         <div style="color: #666; font-size: 14px;">
           <p style="margin: 5px 0;">📍 ${venueText}</p>
-          <p style="margin: 5px 0;">🕐 Vancouver Time</p>
           ${game.status !== 'Scheduled' ? `<p style="margin: 5px 0; color: #C8102E; font-weight: bold;">Status: ${game.status}</p>` : ''}
         </div>
       </div>
@@ -83,7 +82,7 @@ function generateEmailHTML(games) {
         </div>
         
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #999; font-size: 14px;">
-          <p>Boston Red Sox Daily Notifications • Vancouver Time</p>
+          <p>Boston Red Sox Daily Notifications</p>
         </div>
       </body>
     </html>
@@ -102,8 +101,7 @@ function generateEmailText(games) {
 No games scheduled for today. Enjoy your day off!
 
 ---
-Boston Red Sox Daily Notifications
-Vancouver Time`;
+Boston Red Sox Daily Notifications`;
     }
 
     const gamesText = games.map(game => {
@@ -112,7 +110,7 @@ Vancouver Time`;
         const venueText = isHome ? 'Fenway Park' : game.venue.name;
 
         return `Red Sox ${locationText} ${game.opponent.name}
-Time: ${game.vancouverTime} (Vancouver Time)
+Time: ${game.vancouverTime}
 Venue: ${venueText}${game.status !== 'Scheduled' ? `\nStatus: ${game.status}` : ''}`;
     }).join('\n\n');
 
@@ -123,8 +121,7 @@ ${games.length} game${games.length > 1 ? 's' : ''} scheduled for today:
 ${gamesText}
 
 ---
-Boston Red Sox Daily Notifications
-Vancouver Time`;
+Boston Red Sox Daily Notifications`;
 }
 
 /**

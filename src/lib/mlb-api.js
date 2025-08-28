@@ -1,5 +1,5 @@
 import { format, parseISO } from 'date-fns';
-import { zonedTimeToUtc, utcToZonedTime, format as formatTz } from 'date-fns-tz';
+import { formatInTimeZone } from 'date-fns-tz';
 
 const MLB_API_BASE = 'https://statsapi.mlb.com/api/v1';
 const RED_SOX_TEAM_ID = 111; // Boston Red Sox team ID
@@ -58,17 +58,22 @@ export async function getRedSoxGamesForDate(date) {
 }
 
 /**
- * Formats game time to Vancouver timezone
+ * Formats game time to Vancouver timezone with start and end times
  * @param {string} gameDate - ISO date string from MLB API
- * @returns {string} Formatted time in Vancouver timezone
+ * @returns {string} Formatted time range in Vancouver timezone (e.g., "10:05 AM - 1:05 PM")
  */
 export function formatGameTimeForVancouver(gameDate) {
     try {
         const utcDate = parseISO(gameDate);
-        const vancouverTime = utcToZonedTime(utcDate, 'America/Vancouver');
-        return formatTz(vancouverTime, 'h:mm a', { timeZone: 'America/Vancouver' });
+        const startTime = formatInTimeZone(utcDate, 'America/Vancouver', 'h:mm a');
+
+        // Add 3 hours for typical baseball game duration
+        const endDate = new Date(utcDate.getTime() + (3 * 60 * 60 * 1000));
+        const endTime = formatInTimeZone(endDate, 'America/Vancouver', 'h:mm a');
+
+        return `${startTime} - ${endTime}`;
     } catch (error) {
-        console.error('Error formatting game time:', error);
+        console.error('Error formatting game time:', error, 'for date:', gameDate);
         return 'TBD';
     }
 }
@@ -81,9 +86,8 @@ export async function getTodaysRedSoxGames() {
     try {
         // Get today's date in Vancouver timezone
         const now = new Date();
-        const vancouverNow = utcToZonedTime(now, 'America/Vancouver');
-
-        const games = await getRedSoxGamesForDate(vancouverNow);
+        // Just use the current date since we're formatting it as YYYY-MM-DD anyway
+        const games = await getRedSoxGamesForDate(now);
 
         return games.map(game => ({
             ...game,
