@@ -99,7 +99,7 @@ export default function TestEmailButton() {
                             <span>Sending Email...</span>
                         </span>
                     ) : (
-                        '📧 Send Me Today\'s Game Times'
+                        'Send Me Today\'s Game Times'
                     )}
                 </button>
             </div>
