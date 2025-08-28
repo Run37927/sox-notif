@@ -21,7 +21,7 @@ export default async function Home() {
             </div>
             <div className="flex items-start space-x-3">
               <span className="text-red-600 font-bold">🕐</span>
-              <p className="text-gray-700">Game times converted to Local timezone</p>
+              <p className="text-gray-700">Receive game times in PST / EST</p>
             </div>
             <div className="flex items-start space-x-3">
               <span className="text-red-600 font-bold">📍</span>

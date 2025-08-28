@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 
 export default function TestEmailButton() {
     const [email, setEmail] = useState('');
+    const [timezone, setTimezone] = useState('PST');
 
     const sendTestEmail = useMutation({
         mutationFn: async () => {
@@ -14,7 +15,10 @@ export default function TestEmailButton() {
                 throw new Error('Please enter a valid email address');
             }
 
-            const response = await axios.post('/api/send-one-time-email', { email });
+            const response = await axios.post('/api/send-one-time-email', {
+                email,
+                timezone
+            });
             return response.data;
         },
         onSuccess: (data) => {
@@ -58,6 +62,22 @@ export default function TestEmailButton() {
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-colors"
                         disabled={sendTestEmail.isPending}
                     />
+                </div>
+
+                <div>
+                    <label htmlFor="timezone" className="block text-sm font-medium text-gray-700 mb-2">
+                        Choose your timezone
+                    </label>
+                    <select
+                        id="timezone"
+                        value={timezone}
+                        onChange={(e) => setTimezone(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-colors"
+                        disabled={sendTestEmail.isPending}
+                    >
+                        <option value="PST">Pacific Time (PST/PDT)</option>
+                        <option value="EST">Eastern Time (EST/EDT)</option>
+                    </select>
                 </div>
 
                 <button

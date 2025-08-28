@@ -3,8 +3,8 @@ import { Resend } from 'resend';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 function generateEmailHTML(games) {
-    if (games.length === 0) {
-        return `
+  if (games.length === 0) {
+    return `
       <!DOCTYPE html>
       <html>
         <head>
@@ -29,21 +29,21 @@ function generateEmailHTML(games) {
         </body>
       </html>
     `;
-    }
+  }
 
-    const gamesHTML = games.map(game => {
-        const isHome = game.location === 'vs';
-        const locationText = isHome ? 'vs' : '@';
-        const venueText = isHome ? 'Fenway Park' : `${game.venue.name}`;
+  const gamesHTML = games.map(game => {
+    const isHome = game.location === 'vs';
+    const locationText = isHome ? 'vs' : '@';
+    const venueText = isHome ? 'Fenway Park' : `${game.venue.name}`;
 
-        return `
+    return `
       <div style="background: white; border: 1px solid #e1e5e9; border-radius: 8px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
           <h3 style="color: #C8102E; margin: 0; font-size: 18px; font-weight: bold;">
             Red Sox ${locationText} ${game.opponent.name}
           </h3>
           <span style="background: #C8102E; color: white; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: bold;">
-            ${game.vancouverTime}
+            ${game.localTime || game.vancouverTime}
           </span>
         </div>
         
@@ -53,9 +53,9 @@ function generateEmailHTML(games) {
         </div>
       </div>
     `;
-    }).join('');
+  }).join('');
 
-    return `
+  return `
     <!DOCTYPE html>
     <html>
       <head>
@@ -85,26 +85,26 @@ function generateEmailHTML(games) {
 }
 
 function generateEmailText(games) {
-    if (games.length === 0) {
-        return `RED SOX TODAY
+  if (games.length === 0) {
+    return `RED SOX TODAY
 
 No games scheduled for today. Enjoy your day off!
 
 ---
 Boston Red Sox Daily Notifications`;
-    }
+  }
 
-    const gamesText = games.map(game => {
-        const isHome = game.location === 'vs';
-        const locationText = isHome ? 'vs' : '@';
-        const venueText = isHome ? 'Fenway Park' : game.venue.name;
+  const gamesText = games.map(game => {
+    const isHome = game.location === 'vs';
+    const locationText = isHome ? 'vs' : '@';
+    const venueText = isHome ? 'Fenway Park' : game.venue.name;
 
-        return `Red Sox ${locationText} ${game.opponent.name}
-Time: ${game.vancouverTime}
+    return `Red Sox ${locationText} ${game.opponent.name}
+Time: ${game.localTime || game.vancouverTime}
 Venue: ${venueText}${game.status !== 'Scheduled' ? `\nStatus: ${game.status}` : ''}`;
-    }).join('\n\n');
+  }).join('\n\n');
 
-    return `RED SOX TODAY
+  return `RED SOX TODAY
 
 ${games.length} game${games.length > 1 ? 's' : ''} scheduled for today:
 
@@ -115,54 +115,54 @@ Boston Red Sox Daily Notifications`;
 }
 
 export async function sendDailyRedSoxEmail(games, toEmail) {
-    try {
-        const gameCount = games.length;
-        const subject = gameCount === 0
-            ? 'Red Sox Today: No games today'
-            : `Red Sox Today: ${gameCount} game${gameCount > 1 ? 's' : ''}`;
+  try {
+    const gameCount = games.length;
+    const subject = gameCount === 0
+      ? 'Red Sox Today: No games today'
+      : `Red Sox Today: ${gameCount} game${gameCount > 1 ? 's' : ''}`;
 
-        const htmlContent = generateEmailHTML(games);
-        const textContent = generateEmailText(games);
+    const htmlContent = generateEmailHTML(games);
+    const textContent = generateEmailText(games);
 
-        console.log(`Sending Red Sox email to ${toEmail} with subject: ${subject}`);
+    console.log(`Sending Red Sox email to ${toEmail} with subject: ${subject}`);
 
-        const response = await resend.emails.send({
-            from: 'Red Sox Notifier <onboarding@resend.dev>', // You can customize this
-            to: [toEmail],
-            subject: subject,
-            html: htmlContent,
-            text: textContent,
-        });
+    const response = await resend.emails.send({
+      from: 'Red Sox Notifier <onboarding@resend.dev>', // You can customize this
+      to: [toEmail],
+      subject: subject,
+      html: htmlContent,
+      text: textContent,
+    });
 
-        console.log('Email sent successfully:', response);
-        return response;
+    console.log('Email sent successfully:', response);
+    return response;
 
-    } catch (error) {
-        console.error('Error sending Red Sox email:', error);
-        throw error;
-    }
+  } catch (error) {
+    console.error('Error sending Red Sox email:', error);
+    throw error;
+  }
 }
 
 export async function sendTestEmail(toEmail) {
-    try {
-        const mockGames = [
-            {
-                gameId: 'test-123',
-                gameDate: new Date().toISOString(),
-                status: 'Scheduled',
-                homeTeam: { name: 'Boston Red Sox', abbreviation: 'BOS' },
-                awayTeam: { name: 'New York Yankees', abbreviation: 'NYY' },
-                venue: { name: 'Fenway Park', city: 'Boston', state: 'MA' },
-                isHomeGame: true,
-                vancouverTime: '7:10 PM',
-                opponent: { name: 'New York Yankees', abbreviation: 'NYY' },
-                location: 'vs'
-            }
-        ];
+  try {
+    const mockGames = [
+      {
+        gameId: 'test-123',
+        gameDate: new Date().toISOString(),
+        status: 'Scheduled',
+        homeTeam: { name: 'Boston Red Sox', abbreviation: 'BOS' },
+        awayTeam: { name: 'New York Yankees', abbreviation: 'NYY' },
+        venue: { name: 'Fenway Park', city: 'Boston', state: 'MA' },
+        isHomeGame: true,
+        vancouverTime: '7:10 PM',
+        opponent: { name: 'New York Yankees', abbreviation: 'NYY' },
+        location: 'vs'
+      }
+    ];
 
-        return await sendDailyRedSoxEmail(mockGames, toEmail);
-    } catch (error) {
-        console.error('Error sending test email:', error);
-        throw error;
-    }
+    return await sendDailyRedSoxEmail(mockGames, toEmail);
+  } catch (error) {
+    console.error('Error sending test email:', error);
+    throw error;
+  }
 }
