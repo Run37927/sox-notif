@@ -70,3 +70,26 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+   /* Custom toast styling */
+   [data-sonner-toast][data-type="success"] {
+    background-color: rgb(21 128 61) !important;
+    color: white !important;
+    border-color: rgb(21 128 61) !important;
+  }
+
+  [data-sonner-toast][data-type="success"] [data-description] {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  [data-sonner-toast][data-type="error"] {
+    background-color: rgb(220 38 38) !important;
+    color: white !important;
+    border-color: rgb(185 28 28) !important;
+  }
+
+  [data-sonner-toast][data-type="error"] [data-description] {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+}

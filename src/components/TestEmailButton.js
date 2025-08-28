@@ -2,9 +2,10 @@
 
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
+import axios from 'axios';
+import { toast } from 'sonner';
 
 export default function TestEmailButton() {
-    const [lastResult, setLastResult] = useState(null);
     const [email, setEmail] = useState('');
 
     const sendTestEmail = useMutation({
@@ -13,39 +14,31 @@ export default function TestEmailButton() {
                 throw new Error('Please enter a valid email address');
             }
 
-            const response = await fetch('/api/send-one-time-email', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email }),
-            });
-
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || 'Failed to send email');
-            }
-
-            return response.json();
+            const response = await axios.post('/api/send-one-time-email', { email });
+            return response.data;
         },
         onSuccess: (data) => {
-            setLastResult({
-                success: true,
-                message: `✅ Email sent to ${email}! Found ${data.gameCount} game(s) for today`,
-                games: data.games || []
+            const gameText = data.gameCount === 0
+                ? 'No games today'
+                : `${data.gameCount} game${data.gameCount > 1 ? 's' : ''} today`;
+
+            toast.success(`Email sent to ${email}!`, {
+                description: gameText,
+                duration: 4000,
             });
+
             setEmail(''); // Clear email after successful send
         },
         onError: (error) => {
-            setLastResult({
-                success: false,
-                message: `❌ Error: ${error.message}`
+            const errorMessage = error.response?.data?.error || error.message || 'Failed to send email';
+            toast.error('Failed to send email', {
+                description: errorMessage,
+                duration: 4000,
             });
         }
     });
 
     const handleSendEmail = () => {
-        setLastResult(null);
         sendTestEmail.mutate();
     };
 
