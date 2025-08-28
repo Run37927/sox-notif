@@ -2,11 +2,6 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-/**
- * Generates HTML email content for Red Sox games
- * @param {Array} games - Array of game objects
- * @returns {string} HTML email content
- */
 function generateEmailHTML(games) {
     if (games.length === 0) {
         return `
@@ -89,11 +84,6 @@ function generateEmailHTML(games) {
   `;
 }
 
-/**
- * Generates plain text email content for Red Sox games
- * @param {Array} games - Array of game objects
- * @returns {string} Plain text email content
- */
 function generateEmailText(games) {
     if (games.length === 0) {
         return `RED SOX TODAY
@@ -124,12 +114,6 @@ ${gamesText}
 Boston Red Sox Daily Notifications`;
 }
 
-/**
- * Sends daily Red Sox email notification
- * @param {Array} games - Array of game objects
- * @param {string} toEmail - Recipient email address
- * @returns {Promise<Object>} Resend response
- */
 export async function sendDailyRedSoxEmail(games, toEmail) {
     try {
         const gameCount = games.length;
@@ -159,11 +143,6 @@ export async function sendDailyRedSoxEmail(games, toEmail) {
     }
 }
 
-/**
- * Sends a test email to verify the service is working
- * @param {string} toEmail - Recipient email address
- * @returns {Promise<Object>} Resend response
- */
 export async function sendTestEmail(toEmail) {
     try {
         const mockGames = [
