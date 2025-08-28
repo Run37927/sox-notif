@@ -12,13 +12,9 @@ export async function GET(request) {
             );
         }
 
-        // Use today's actual date (August 28, 2025) to get the real Red Sox @ Orioles game
-        const today = new Date('2025-08-28');
+        const today = new Date();
 
-        console.log('Fetching Red Sox games for today (August 28, 2025)...');
         const games = await getRedSoxGamesForDate(today);
-
-        console.log(`Found ${games.length} games for today`);
 
         // Process games to add Vancouver times and opponent info
         const processedGames = games.map(game => ({
